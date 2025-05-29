@@ -14,6 +14,7 @@ import {
 interface RadialSVGOverlayProps {
   canvasSize: { width: number; height: number };
   imageData: ImageData | null;
+  centerPoint?: { x: number; y: number };
 }
 
 interface ArcSegment {
@@ -26,6 +27,7 @@ interface ArcSegment {
 const RadialSVGOverlay: React.FC<RadialSVGOverlayProps> = ({
   canvasSize,
   imageData,
+  centerPoint,
 }) => {
   const getAverageColorForArc = (
     centerX: number,
@@ -43,7 +45,10 @@ const RadialSVGOverlay: React.FC<RadialSVGOverlayProps> = ({
 
     // Sample points along the arc
     const angleDiff = endAngle - startAngle;
-    const samples = Math.max(MIN_SAMPLES_PER_ARC, Math.floor((angleDiff * radius) / SAMPLES_PER_PIXEL)); // More samples for longer arcs
+    const samples = Math.max(
+      MIN_SAMPLES_PER_ARC,
+      Math.floor((angleDiff * radius) / SAMPLES_PER_PIXEL),
+    ); // More samples for longer arcs
 
     for (let i = 0; i <= samples; i++) {
       const angle = startAngle + (angleDiff * i) / samples;
@@ -73,13 +78,34 @@ const RadialSVGOverlay: React.FC<RadialSVGOverlayProps> = ({
       return [];
     }
 
-    const centerX = canvasSize.width / 2;
-    const centerY = canvasSize.height / 2;
-    const maxRadius = Math.sqrt(centerX * centerX + centerY * centerY) + RADIUS_BUFFER;
+    const centerX = centerPoint?.x ?? canvasSize.width / 2;
+    const centerY = centerPoint?.y ?? canvasSize.height / 2;
+
+    // Calculate distance to all four corners and use the maximum
+    const topLeft = Math.sqrt(centerX * centerX + centerY * centerY);
+    const topRight = Math.sqrt(
+      (canvasSize.width - centerX) * (canvasSize.width - centerX) +
+        centerY * centerY,
+    );
+    const bottomLeft = Math.sqrt(
+      centerX * centerX +
+        (canvasSize.height - centerY) * (canvasSize.height - centerY),
+    );
+    const bottomRight = Math.sqrt(
+      (canvasSize.width - centerX) * (canvasSize.width - centerX) +
+        (canvasSize.height - centerY) * (canvasSize.height - centerY),
+    );
+
+    const maxRadius =
+      Math.max(topLeft, topRight, bottomLeft, bottomRight) + RADIUS_BUFFER;
     const segments: ArcSegment[] = [];
 
     // Generate concentric circles with spacing (stroke + gap)
-    for (let radius = STARTING_RADIUS; radius <= maxRadius; radius += CIRCLE_SPACING) {
+    for (
+      let radius = STARTING_RADIUS;
+      radius <= maxRadius;
+      radius += CIRCLE_SPACING
+    ) {
       const startAngle = Math.random() * Math.PI * 2;
       const endAngle = startAngle + Math.PI * 2;
       let currentAngle = startAngle;
@@ -112,7 +138,7 @@ const RadialSVGOverlay: React.FC<RadialSVGOverlayProps> = ({
     }
 
     return segments;
-  }, [imageData, canvasSize.width, canvasSize.height]);
+  }, [imageData, canvasSize.width, canvasSize.height, centerPoint]);
 
   const createArcPath = (
     centerX: number,
@@ -135,8 +161,8 @@ const RadialSVGOverlay: React.FC<RadialSVGOverlayProps> = ({
     return null;
   }
 
-  const centerX = canvasSize.width / 2;
-  const centerY = canvasSize.height / 2;
+  const centerX = centerPoint?.x ?? canvasSize.width / 2;
+  const centerY = centerPoint?.y ?? canvasSize.height / 2;
 
   return (
     <svg

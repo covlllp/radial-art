@@ -14,11 +14,20 @@ const ImageCanvasContainer: React.FC = () => {
   const [imageData, setImageData] = useState<ImageData | null>(null);
   const [canvasSize, setCanvasSize] = useState({ width: 0, height: 0 });
   const [imageSrc, setImageSrc] = useState('/img/Chromecast%20Image.jpg');
+  const [centerPoint, setCenterPoint] = useState<
+    { x: number; y: number } | undefined
+  >(undefined);
 
   // Set CSS custom properties for dynamic styling
   useEffect(() => {
-    document.documentElement.style.setProperty('--canvas-opacity', CANVAS_OPACITY.toString());
-    document.documentElement.style.setProperty('--canvas-margin', `${CANVAS_MARGIN}px`);
+    document.documentElement.style.setProperty(
+      '--canvas-opacity',
+      CANVAS_OPACITY.toString(),
+    );
+    document.documentElement.style.setProperty(
+      '--canvas-margin',
+      `${CANVAS_MARGIN}px`,
+    );
   }, []);
 
   useEffect(() => {
@@ -53,6 +62,11 @@ const ImageCanvasContainer: React.FC = () => {
     setImageLoaded(false);
     setImageData(null);
     setCanvasSize({ width: 0, height: 0 });
+    setCenterPoint(undefined);
+  }, []);
+
+  const handleCanvasClick = useCallback((x: number, y: number) => {
+    setCenterPoint({ x, y });
   }, []);
 
   return (
@@ -64,9 +78,14 @@ const ImageCanvasContainer: React.FC = () => {
           onImageLoad={handleImageLoad}
           onCanvasData={handleCanvasData}
           onCanvasSize={handleCanvasSize}
+          onCanvasClick={handleCanvasClick}
         />
         {imageLoaded && (
-          <RadialSVGOverlay canvasSize={canvasSize} imageData={imageData} />
+          <RadialSVGOverlay
+            canvasSize={canvasSize}
+            imageData={imageData}
+            centerPoint={centerPoint}
+          />
         )}
       </div>
       <ImageUpload onImageSelect={handleImageSelect} />

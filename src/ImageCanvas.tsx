@@ -6,6 +6,7 @@ interface ImageCanvasProps {
   onImageLoad: () => void;
   onCanvasData: (data: ImageData) => void;
   onCanvasSize: (size: { width: number; height: number }) => void;
+  onCanvasClick: (x: number, y: number) => void;
 }
 
 const ImageCanvas: React.FC<ImageCanvasProps> = ({
@@ -14,6 +15,7 @@ const ImageCanvas: React.FC<ImageCanvasProps> = ({
   onImageLoad,
   onCanvasData,
   onCanvasSize,
+  onCanvasClick,
 }) => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const imageRef = useRef<HTMLImageElement>(null);
@@ -67,6 +69,17 @@ const ImageCanvas: React.FC<ImageCanvasProps> = ({
     };
   }, [imageSrc, windowSize, onImageLoad, onCanvasData, onCanvasSize]);
 
+  const handleCanvasClick = (event: React.MouseEvent<HTMLCanvasElement>) => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+
+    const rect = canvas.getBoundingClientRect();
+    const x = event.clientX - rect.left;
+    const y = event.clientY - rect.top;
+
+    onCanvasClick(x, y);
+  };
+
   return (
     <>
       <img
@@ -75,7 +88,12 @@ const ImageCanvas: React.FC<ImageCanvasProps> = ({
         style={{ display: 'none' }}
         alt="Source for canvas"
       />
-      <canvas ref={canvasRef} className="image-canvas" />
+      <canvas
+        ref={canvasRef}
+        className="image-canvas"
+        onClick={handleCanvasClick}
+        style={{ cursor: 'crosshair' }}
+      />
     </>
   );
 };
