@@ -1,12 +1,8 @@
 import React from 'react';
+import ImageCanvasContainer from './ImageCanvasContainer';
 
 const App: React.FC = () => {
-  return (
-    <div>
-      <h1>Radial Art</h1>
-      <p>Welcome to your minimal React app!</p>
-    </div>
-  );
+  return <ImageCanvasContainer />;
 };
 
 export default App;
