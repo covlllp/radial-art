@@ -1,13 +1,8 @@
 import React, { useEffect, useState, useMemo } from 'react';
+import { ParameterValues } from './ParameterControls';
 import {
-  ARC_STROKE_WIDTH,
-  ARC_GAP,
-  CIRCLE_SPACING,
-  MIN_ARC_LENGTH,
-  ARC_LENGTH_RANGE,
   MIN_SAMPLES_PER_ARC,
   SAMPLES_PER_PIXEL,
-  STARTING_RADIUS,
   RADIUS_BUFFER,
 } from './constants';
 
@@ -15,6 +10,7 @@ interface RadialSVGOverlayProps {
   canvasSize: { width: number; height: number };
   imageData: ImageData | null;
   centerPoint?: { x: number; y: number };
+  parameters: ParameterValues;
 }
 
 interface ArcSegment {
@@ -28,6 +24,7 @@ const RadialSVGOverlay: React.FC<RadialSVGOverlayProps> = ({
   canvasSize,
   imageData,
   centerPoint,
+  parameters,
 }) => {
   const getAverageColorForArc = (
     centerX: number,
@@ -102,9 +99,9 @@ const RadialSVGOverlay: React.FC<RadialSVGOverlayProps> = ({
 
     // Generate concentric circles with spacing (stroke + gap)
     for (
-      let radius = STARTING_RADIUS;
+      let radius = parameters.startingRadius;
       radius <= maxRadius;
-      radius += CIRCLE_SPACING
+      radius += parameters.circleSpacing
     ) {
       const startAngle = Math.random() * Math.PI * 2;
       const endAngle = startAngle + Math.PI * 2;
@@ -113,7 +110,8 @@ const RadialSVGOverlay: React.FC<RadialSVGOverlayProps> = ({
       // Generate random arc segments for this circle
       while (currentAngle < endAngle) {
         // Random arc length
-        const arcLength = MIN_ARC_LENGTH + Math.random() * ARC_LENGTH_RANGE;
+        const arcLengthRange = parameters.maxArcLength - parameters.minArcLength;
+        const arcLength = parameters.minArcLength + Math.random() * arcLengthRange;
         const segmentEndAngle = Math.min(currentAngle + arcLength, endAngle);
 
         const color = getAverageColorForArc(
@@ -132,13 +130,13 @@ const RadialSVGOverlay: React.FC<RadialSVGOverlayProps> = ({
         });
 
         // Add gap between segments (convert to radians based on radius)
-        const gapInRadians = ARC_GAP / radius;
+        const gapInRadians = parameters.arcGap / radius;
         currentAngle = segmentEndAngle + gapInRadians;
       }
     }
 
     return segments;
-  }, [imageData, canvasSize.width, canvasSize.height, centerPoint]);
+  }, [imageData, canvasSize.width, canvasSize.height, centerPoint, parameters]);
 
   const createArcPath = (
     centerX: number,
@@ -186,7 +184,7 @@ const RadialSVGOverlay: React.FC<RadialSVGOverlayProps> = ({
             segment.endAngle,
           )}
           stroke={segment.color}
-          strokeWidth={ARC_STROKE_WIDTH}
+          strokeWidth={parameters.arcStrokeWidth}
           fill="none"
         />
       ))}

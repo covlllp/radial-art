@@ -2,6 +2,7 @@ body {
   margin: 0;
   padding: 0;
   overflow: hidden;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Helvetica Neue', Arial, sans-serif;
 }
 
 .image-canvas-container {
@@ -9,13 +10,13 @@ body {
   height: 100vh;
   margin: 0;
   padding: var(--canvas-margin, 20px);
-  padding-bottom: 80px;
+  padding-bottom: 260px;
   box-sizing: border-box;
   position: relative;
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
+  justify-content: flex-start;
 }
 
 .canvas-wrapper {
@@ -27,11 +28,89 @@ body {
   opacity: var(--canvas-opacity, 0.05);
 }
 
-.image-upload {
-  position: absolute;
-  bottom: 20px;
-  left: 50%;
-  transform: translateX(-50%);
+.bottom-controls {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: #f8f9fa;
+  border-top: 1px solid #e0e0e0;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+  box-shadow: 0 -4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.parameter-controls {
+  width: 100%;
+  max-width: 1200px;
+}
+
+.controls-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 16px;
+  align-items: center;
+}
+
+.control-item {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  min-width: 0;
+}
+
+.control-label {
+  font-size: 11px;
+  font-weight: 600;
+  color: #444;
+  text-align: center;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.control-slider {
+  width: 100%;
+  height: 6px;
+  border-radius: 3px;
+  background: #d6d8db;
+  outline: none;
+  -webkit-appearance: none;
+  cursor: pointer;
+}
+
+.control-slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: #007bff;
+  cursor: pointer;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.control-slider::-moz-range-thumb {
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: #007bff;
+  cursor: pointer;
+  border: none;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.control-slider:hover::-webkit-slider-thumb {
+  background: #0056b3;
+  transform: scale(1.1);
+}
+
+.control-slider:hover::-moz-range-thumb {
+  background: #0056b3;
+  transform: scale(1.1);
 }
 
 .upload-button {

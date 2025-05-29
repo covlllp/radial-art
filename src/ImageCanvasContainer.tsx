@@ -2,7 +2,8 @@ import React, { useState, useEffect, useCallback } from 'react';
 import ImageCanvas from './ImageCanvas';
 import RadialSVGOverlay from './RadialSVGOverlay';
 import ImageUpload from './ImageUpload';
-import { CANVAS_OPACITY, CANVAS_MARGIN } from './constants';
+import ParameterControls, { ParameterValues } from './ParameterControls';
+import { CANVAS_MARGIN } from './constants';
 import './styles.css';
 
 const ImageCanvasContainer: React.FC = () => {
@@ -17,18 +18,27 @@ const ImageCanvasContainer: React.FC = () => {
   const [centerPoint, setCenterPoint] = useState<
     { x: number; y: number } | undefined
   >(undefined);
+  const [parameters, setParameters] = useState<ParameterValues>({
+    canvasOpacity: 0.05,
+    arcStrokeWidth: 3,
+    arcGap: 3,
+    circleSpacing: 6,
+    minArcLength: 0.1,
+    maxArcLength: 0.4,
+    startingRadius: 6,
+  });
 
   // Set CSS custom properties for dynamic styling
   useEffect(() => {
     document.documentElement.style.setProperty(
       '--canvas-opacity',
-      CANVAS_OPACITY.toString(),
+      parameters.canvasOpacity.toString(),
     );
     document.documentElement.style.setProperty(
       '--canvas-margin',
       `${CANVAS_MARGIN}px`,
     );
-  }, []);
+  }, [parameters.canvasOpacity]);
 
   useEffect(() => {
     const handleResize = () => {
@@ -69,6 +79,13 @@ const ImageCanvasContainer: React.FC = () => {
     setCenterPoint({ x, y });
   }, []);
 
+  const handleParameterChange = useCallback(
+    (parameter: keyof ParameterValues, value: number) => {
+      setParameters((prev) => ({ ...prev, [parameter]: value }));
+    },
+    [],
+  );
+
   return (
     <div className="image-canvas-container">
       <div className="canvas-wrapper">
@@ -85,10 +102,17 @@ const ImageCanvasContainer: React.FC = () => {
             canvasSize={canvasSize}
             imageData={imageData}
             centerPoint={centerPoint}
+            parameters={parameters}
           />
         )}
       </div>
-      <ImageUpload onImageSelect={handleImageSelect} />
+      <div className="bottom-controls">
+        <ImageUpload onImageSelect={handleImageSelect} />
+        <ParameterControls
+          parameters={parameters}
+          onParameterChange={handleParameterChange}
+        />
+      </div>
     </div>
   );
 };
