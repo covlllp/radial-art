@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import ImageCanvas from './ImageCanvas';
 import RadialSVGOverlay from './RadialSVGOverlay';
+import ImageUpload from './ImageUpload';
 import { CANVAS_OPACITY, CANVAS_MARGIN } from './constants';
 import './styles.css';
 
@@ -12,6 +13,7 @@ const ImageCanvasContainer: React.FC = () => {
   const [imageLoaded, setImageLoaded] = useState(false);
   const [imageData, setImageData] = useState<ImageData | null>(null);
   const [canvasSize, setCanvasSize] = useState({ width: 0, height: 0 });
+  const [imageSrc, setImageSrc] = useState('/img/Chromecast%20Image.jpg');
 
   // Set CSS custom properties for dynamic styling
   useEffect(() => {
@@ -46,11 +48,18 @@ const ImageCanvasContainer: React.FC = () => {
     [],
   );
 
+  const handleImageSelect = useCallback((newImageSrc: string) => {
+    setImageSrc(newImageSrc);
+    setImageLoaded(false);
+    setImageData(null);
+    setCanvasSize({ width: 0, height: 0 });
+  }, []);
+
   return (
     <div className="image-canvas-container">
       <div className="canvas-wrapper">
         <ImageCanvas
-          imageSrc="/img/Chromecast%20Image.jpg"
+          imageSrc={imageSrc}
           windowSize={windowSize}
           onImageLoad={handleImageLoad}
           onCanvasData={handleCanvasData}
@@ -60,6 +69,7 @@ const ImageCanvasContainer: React.FC = () => {
           <RadialSVGOverlay canvasSize={canvasSize} imageData={imageData} />
         )}
       </div>
+      <ImageUpload onImageSelect={handleImageSelect} />
     </div>
   );
 };

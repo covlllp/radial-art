@@ -9,9 +9,11 @@ body {
   height: 100vh;
   margin: 0;
   padding: var(--canvas-margin, 20px);
+  padding-bottom: 80px;
   box-sizing: border-box;
   position: relative;
   display: flex;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
 }
@@ -23,4 +25,30 @@ body {
 .image-canvas {
   display: block;
   opacity: var(--canvas-opacity, 0.05);
+}
+
+.image-upload {
+  position: absolute;
+  bottom: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+.upload-button {
+  background-color: #007bff;
+  color: white;
+  border: none;
+  padding: 12px 24px;
+  border-radius: 6px;
+  font-size: 16px;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.upload-button:hover {
+  background-color: #0056b3;
+}
+
+.upload-button:active {
+  transform: translateY(1px);
 }
