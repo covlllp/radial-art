@@ -5,6 +5,7 @@ interface ImageCanvasProps {
   windowSize: { width: number; height: number };
   onImageLoad: () => void;
   onCanvasData: (data: ImageData) => void;
+  onCanvasSize: (size: { width: number; height: number }) => void;
 }
 
 const ImageCanvas: React.FC<ImageCanvasProps> = ({
@@ -12,6 +13,7 @@ const ImageCanvas: React.FC<ImageCanvasProps> = ({
   windowSize,
   onImageLoad,
   onCanvasData,
+  onCanvasSize,
 }) => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const imageRef = useRef<HTMLImageElement>(null);
@@ -49,6 +51,7 @@ const ImageCanvas: React.FC<ImageCanvasProps> = ({
       // Get image data for pixel information
       const imageData = ctx.getImageData(0, 0, scaledWidth, scaledHeight);
       onCanvasData(imageData);
+      onCanvasSize({ width: scaledWidth, height: scaledHeight });
       onImageLoad();
     };
 
@@ -62,7 +65,7 @@ const ImageCanvas: React.FC<ImageCanvasProps> = ({
     return () => {
       image.removeEventListener('load', handleImageLoad);
     };
-  }, [imageSrc, windowSize, onImageLoad, onCanvasData]);
+  }, [imageSrc, windowSize, onImageLoad, onCanvasData, onCanvasSize]);
 
   return (
     <>
